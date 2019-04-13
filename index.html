@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>quitz template</title>
+    <style>
+        body {
+            background-color: whitesmoke;
+            font-size: 20pt;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .question-container {
+            margin: 40px 20px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 2px;
+            border: #dcdcdc solid 1px;
+        }
+
+        .question-title {
+            padding-bottom: 20px;
+            font-size: 40pt;
+        }
+
+        .steps-container {
+            margin: 40px 20px;
+            padding: 20px;
+            text-align: center
+        }
+
+        .answer-button {
+            border-radius: 2px;
+            border: #dcdcdc solid 1px;
+            background-color: whitesmoke;
+            font-size: 30pt;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .answer-button-active {
+            border-radius: 2px;
+            border: #dcdcdc solid 1px;
+            background-color: whitesmoke;
+            color: #005e6a;
+            font-size: 30pt;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .answer-button-right {
+            border-radius: 2px;
+            border: #27ae60 solid 1px;
+            background-color: #2ece72;
+            color: white;
+            font-size: 30pt;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .answer-button-wrong {
+            border-radius: 2px;
+            border: #c0392b solid 1px;
+            background-color: #d03e2f;
+            color: white;
+            font-size: 30pt;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .next-button {
+            background-color: #01bcd5;
+            padding: 40px;
+            border-radius: 2px;
+            border: #dcdcdc solid 1px;
+            position: absolute;
+            bottom: 20px;
+            right: 10%;
+            font-size: 30pt;
+            text-align: center;
+            color: #005e6a;
+            width: calc(80% - 80px);
+        }
+
+        .active-step {
+            background-color: #01bcd5;
+            border: #dcdcdc solid 1px;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px;
+        }
+
+        .step {
+            background-color: #dcdcdc;
+            border: #dcdcdc solid 1px;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="steps-container" id="steps-container">
+
+    </div>
+    <div class="question-container" id="question-container">
+        <div class="question-title" id="question-title">
+            Question
+        </div>
+
+        <div class="answers-container" id="answers-container">
+
+        </div>
+
+    </div>
+    <div class="next-button" id="next-button">
+        Next
+    </div>
+
+    <script>
+        var items = [
+            {
+                id: 0,
+                question: 'Question 1',
+                answers: [
+                    {
+                        id: 1,
+                        answer: 'answer 1',
+                        right: true
+                    },
+                    {
+                        id: 2,
+                        answer: 'answer 2'
+                    },
+                    {
+                        id: 3,
+                        answer: 'answer 3'
+                    }
+                ]
+            },
+            {
+                id: 1,
+                question: 'Question 2',
+                answers: [
+                    {
+                        id: 1,
+                        answer: 'answer 1'
+                    },
+                    {
+                        id: 2,
+                        answer: 'answer 2',
+                        right: true
+                    }
+                ]
+            },
+            {
+                id: 2,
+                question: 'Question 3',
+                answers: [
+                    {
+                        id: 1,
+                        answer: 'answer 1'
+                    },
+                    {
+                        id: 2,
+                        answer: 'answer 2',
+                        right: true
+                    },
+                    {
+                        id: 3,
+                        answer: 'answer 3'
+                    }
+                ]
+            }
+        ]
+
+        var step = 0
+
+        var questionTitle = document.getElementById('question-title')
+        var questionAnswersContainer = document.getElementById('answers-container')
+        var nextButton = document.getElementById('next-button')
+        var stepsContainer = document.getElementById('steps-container')
+
+        nextButton.onclick = function () {
+            step++
+            updateQuestion()
+            updateSteps()
+        }
+
+        var updateSteps = function () {
+            stepsContainer.innerHTML = ''
+            var stepsElements = ''
+            items.forEach(function (item, i) {
+                if (i <= step) {
+                    stepsElements += '<span class="active-step"></span>'
+                }
+                else {
+                    stepsElements += '<span class="step"></span>'
+                }
+            })
+
+            stepsContainer.innerHTML = stepsElements
+        }
+
+        var updateQuestion = function () {
+            if (items.length <= step) {
+                return
+            }
+            questionTitle.innerHTML = ''
+            questionAnswersContainer.innerHTML = ''
+
+            questionTitle.innerHTML = items[step].question
+
+            renderAnswers()
+        }
+
+        var renderAnswers = function () {
+            var answersElements = ''
+
+            items[step].answers.forEach(function (a, i) {
+                if (a.chosen) {
+                    if (a.right){
+                        answersElements += '<div class="answer-button-right" id="answer-' + step + '-' + i + '"> ' + a.answer + ' </div>'
+                    }
+                    else {
+                        answersElements += '<div class="answer-button-wrong" id="answer-' + step + '-' + i + '"> ' + a.answer + ' </div>'
+                    }
+                    
+                }
+                else {
+                    answersElements += '<div class="answer-button" id="answer-' + step + '-' + i + '"> ' + a.answer + ' </div>'
+                }
+            })
+
+            questionAnswersContainer.innerHTML = answersElements
+
+            items[step].answers.forEach(function (a, i) {
+                var stepButton = document.getElementById('answer-' + step + '-' + i)
+                stepButton.onclick = function () {
+                    chooseAnswer(i)
+                }
+            })
+        }
+
+        var chooseAnswer = function (answerIndex) {
+            if (step >= items.length) {
+                return
+            }
+
+            items[step].answers.forEach(function (a, i) {
+                if (i == answerIndex) {
+                    a.chosen = true
+                }
+                else {
+                    a.chosen = false
+                }
+            })
+            
+            renderAnswers()
+        }
+
+        updateQuestion()
+        updateSteps()
+
+
+    </script>
+</body>
+
+</html>
